@@ -27,7 +27,7 @@ MainMenu::MainMenu(sf::RenderWindow &w)
     : _window(w), _main_menu_context(nullptr, menu_destroy_context) {
   setup_menu_context();
 }
-
+//windows menu update
 void MainMenu::start() {
   _window.setFramerateLimit(60);
   while (_window.isOpen()) {
@@ -49,6 +49,7 @@ void MainMenu::start() {
   }
 }
 
+    //menu
 void MainMenu::setup_menu_context() {
   _font.loadFromFile("sansation.ttf");
   game_menu::Style style{.TitleFont = &_font,
@@ -75,9 +76,13 @@ void MainMenu::setup_menu_context() {
   std::vector<game_menu::MenuItem> items{
       {"New Game",
        [&](sf::RenderTarget &target) {
-         game::GameController gameController(&_window);
+         GameController gameController(&_window);
          gameController.start();
        }},
+    {"AI Training", [](sf::RenderTarget &target) {
+
+    }},
+    {"AI Play", [](sf::RenderTarget &target) {}},
       {"Leaderboard", [](sf::RenderTarget &target) {}},
       {"Settings", [](sf::RenderTarget &target) {}},
       {"Exit",
