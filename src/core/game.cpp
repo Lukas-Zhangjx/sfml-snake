@@ -18,7 +18,7 @@
  */
 
 #include "game.h"
-
+#include <array>
 #include <iostream>
 #include <memory>
 #include <random>
@@ -31,8 +31,9 @@ GameController::GameController(sf::RenderWindow *w) : snake(w) {
 }
   // snake location
   sf::Vector2<int> direction(-1, 0);
-  std::unique_ptr<Food> food;
-
+  std::unique_ptr<Food>  food;;
+  bool game_over = false;
+  bool food_ate = false;
   // game loop
 void GameController::start() {
   loadResources();
@@ -41,14 +42,15 @@ void GameController::start() {
 }
  void GameController::reset() {
   //food location init
-  std::unique_ptr<Food> food =
-    std::make_unique<Food>(screen, snake.getNextFoodLocation());
+  food = std::make_unique<Food>(screen, snake.getNextFoodLocation());
   direction.x = -1;
   direction.y = 0;
   score = 0;
   snake.snake_reset();
+  game_over = false;
+  food_ate = false;
 }
-
+// tip window generates
   TipWindow::win_val GameController::tipwindow_generate() {
 
   TipWindow::win_val rv;
@@ -94,8 +96,7 @@ void GameController::gameLoop() {
   bool loopInvarient = true;
 
   //food location get
-  std::unique_ptr<Food> food =
-    std::make_unique<Food>(screen, snake.getNextFoodLocation());
+   food = std::make_unique<Food>(screen, snake.getNextFoodLocation());
 // gameplay
   while (loopInvarient) {
     //snake draw
@@ -108,9 +109,11 @@ void GameController::gameLoop() {
     // game over
     if (snake.died()) {
       //loopInvarient = false;
+      game_over = true;
+
       TipWindow::win_val win_rv = this->tipwindow_generate();
       if (win_rv == TipWindow::Exit) {
-        loopInvarient = false;
+        loopInvarient = true;
       }
       else {
         this->reset();
@@ -121,6 +124,7 @@ void GameController::gameLoop() {
     // get socre
     if (snake.ateFood(food.get())) {
       score++;
+      food_ate = true;
       food.reset(new Food(screen, snake.getNextFoodLocation()));
     }
 
@@ -154,4 +158,53 @@ void GameController::loadResources() {
 }
 sf::Font *GameController::getFont(Fonts font) { return &fontList[font]; }
 
+
+
+/******************AI function*****************/
+  float game::GameController::AI_Reward() {
+  if (game_over == true) return -10.0f;
+  if (food_ate == true) return 10.0f;
+  game::game_over = false;
+  game::food_ate = false;
+  return -0.01f; // 鼓励快速找到食物
+}
+  // AI move
+  void game::GameController::AI_Move_Action(int action) {
+  switch(action) {
+    case 0:
+      direction.y = -1;
+      direction.x = 0; break;
+    case 1:
+      direction.y = 1;
+      direction.x = 0;break;
+    case 2:
+      direction.x = -1;
+      direction.y = 0;break;
+    case 3:
+      direction.x = 1;
+      direction.y = 0;break;
+  }
+}
+
+
+  // 提取状态向量
+  State game::GameController::AI_GetState() {
+  State s{};
+
+  auto head_for_ai = snake.Get_Snake_loction();
+  auto food_for_ai = food->getFood();
+  s[0] = head_for_ai.getGlobalBounds().left;
+  s[1] = head_for_ai.getGlobalBounds().top;
+  s[2] = food_for_ai.getGlobalBounds().left;
+  s[3] = food_for_ai.getGlobalBounds().top;
+
+  // 蛇头周围是否有墙或自己
+  s[4] = checkCollision(head.x, head.y - 1) ? 1.0f : 0.0f; // 上
+  s[5] = game.isObstacle(head.x, head.y + 1) ? 1.0f : 0.0f; // 下
+  s[6] = game.isObstacle(head.x - 1, head.y) ? 1.0f : 0.0f; // 左
+  s[7] = game.isObstacle(head.x + 1, head.y) ? 1.0f : 0.0f; // 右
+  return s;
+}
 } // namespace game
+
+

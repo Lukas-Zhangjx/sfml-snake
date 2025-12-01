@@ -47,11 +47,14 @@ void game::Snake::drawSnake() {
   screen->draw(body[0]);
 }
 
+
+sf::RectangleShape game::Snake:: Get_Snake_loction() {
+  return body[0];
+}
 bool game::Snake::died() {
   int rv;
 
-  colorBody = sf::Color::Red ;
-  colorHead = sf::Color::Green;
+
   for (int i = BOX_SIZE / (movementScale / 10); i < snake_length; ++i) {
     if (checkCollision(body[0], body[i]))
       return true;
@@ -68,7 +71,24 @@ bool game::Snake::died() {
   }
    return rv;
 }
+bool game::Snake::Hit_Warning_AI(game::direction_base dir) {
+  direction_base dir;
+  bool rv = false;
+  switch (dir) {
+    case game::Up:
+      break;
+    case game::Down:
+      break;
+    case game::Left:
+      break;
+    case game::Right:
+      break;
+      default:
+      break;
 
+  }
+
+}
 bool game::Snake::ateFood(Food *fd) {
   if (updateLegth) {
     snake_length++;

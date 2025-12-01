@@ -47,6 +47,8 @@ set(SOURCE_FILES
 "src/core/game.cpp"
         src/ui/TipWindow.cpp
         src/ui/TipWindow.h
+        src/core/game_ai_action.cpp
+        src/core/game_ai_action.h
 )
 
 if(WIN32)

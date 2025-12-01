@@ -52,11 +52,17 @@ enum MenuText {
 enum Fonts {
 
 };
+  // define AI array
+  using State = std::array<int, 8>;
+  // 状态向量，自己根据需要调整
+  static constexpr int ACTION_COUNT = 4; // 上下左右
 
 /*==================================================*
  *			The main game controller *
  *===================================================*/
 class GameController {
+
+
 public:
   /* Constructors */
   GameController(sf::RenderWindow *w);
@@ -64,9 +70,15 @@ public:
   /* Public methods */
   void start();
   void reset();
+
   /* methods to access the resources */
   sf::Font *getFont(Fonts font); // no definition yet
   bool loopInvarient;
+
+  //AI function
+  float AI_Reward();
+  State AI_GetState() ;
+  void AI_Move_Action(int action);
 private:
   void gameLoop();
   void setupScene();
@@ -78,6 +90,8 @@ private:
   sf::RenderWindow *screen;
   float scale;
   int score;
+  bool game_over;
+  bool food_ate;
 
   /* Resources that the controller retrieves from Disk */
   sf::Font fontList[3];
