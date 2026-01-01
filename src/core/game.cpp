@@ -113,7 +113,7 @@ void GameController::gameLoop() {
 
       TipWindow::win_val win_rv = this->tipwindow_generate();
       if (win_rv == TipWindow::Exit) {
-        loopInvarient = true;
+        loopInvarient = false;
       }
       else {
         this->reset();
@@ -193,17 +193,26 @@ sf::Font *GameController::getFont(Fonts font) { return &fontList[font]; }
 
   auto head_for_ai = snake.Get_Snake_loction();
   auto food_for_ai = food->getFood();
-  s[0] = head_for_ai.getGlobalBounds().left;
-  s[1] = head_for_ai.getGlobalBounds().top;
-  s[2] = food_for_ai.getGlobalBounds().left;
-  s[3] = food_for_ai.getGlobalBounds().top;
+
+  s[0] = head_for_ai.getPosition().x;
+  s[1] = head_for_ai.getPosition().y;
+  s[2] = food_for_ai.getPosition().x;
+  s[3] = food_for_ai.getPosition().y;
 
   // 蛇头周围是否有墙或自己
-  s[4] = checkCollision(head.x, head.y - 1) ? 1.0f : 0.0f; // 上
-  s[5] = game.isObstacle(head.x, head.y + 1) ? 1.0f : 0.0f; // 下
-  s[6] = game.isObstacle(head.x - 1, head.y) ? 1.0f : 0.0f; // 左
-  s[7] = game.isObstacle(head.x + 1, head.y) ? 1.0f : 0.0f; // 右
+  s[4] = snake.Hit_Warning_AI(Up); // 上
+  s[5] = snake.Hit_Warning_AI(Down); // 下
+  s[6] = snake.Hit_Warning_AI(Left); // 左
+  s[7] = snake.Hit_Warning_AI(Right); // 右
   return s;
+}
+
+  // 执行动作并返回 (next_state, reward, done)
+  std::tuple<State, float, bool> game::GameController::Ai_Action_Step(int action) {
+  AI_Move_Action(action);
+  float reward = AI_Reward();
+  bool done = game_over;
+  return { AI_GetState(), reward, done };
 }
 } // namespace game
 

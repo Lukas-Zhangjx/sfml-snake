@@ -3,8 +3,17 @@
 //
 
 #include "game_ai_action.h"
+
+#include <objc/objc.h>
+
 #include "array"
 
 namespace game_ai {
-    using State = std::array<float, 8>;
+    Game_Ai::Game_Ai(game::GameController game_ctrl) {
+
+    }
+    void Game_Ai::Ai_Game_Training() {
+
+    }
+
 } // game_ai

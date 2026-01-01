@@ -70,7 +70,7 @@ public:
   /* Public methods */
   void start();
   void reset();
-
+  std::tuple<State, float, bool> Ai_Action_Step(int action);
   /* methods to access the resources */
   sf::Font *getFont(Fonts font); // no definition yet
   bool loopInvarient;
